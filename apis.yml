@@ -1,23 +1,130 @@
 aid: willow
 name: Willow
-description: 'Willow is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Willow Innovations, Inc. is a Mountain View, California consumer health-technology company founded
+  in 2014 that makes wearable, in-bra breast pumps — the Willow 360, Willow Go and the Wave manual
+  pump — sold direct to consumers at onewillow.com and paired with a mobile app that tracks output
+  and controls suction. Willow publishes no developer programme, API keys or OpenAPI, but its
+  storefront is an agent-callable surface: it serves a Universal Commerce Protocol merchant profile
+  at /.well-known/ucp.json and a live, anonymous MCP endpoint at /api/ucp/mcp exposing 13 tools for
+  catalog search, cart, checkout and order retrieval, alongside published agent instructions
+  (agents.md, llms.txt) and OAuth 2.0/OIDC customer-account discovery documents.
+image: https://onewillow.com/cdn/shop/files/OG-Image_db607121-7a26-49c9-b231-3a1e572a0fca_1200x630.jpg?v=1716782735
 url: https://raw.githubusercontent.com/api-evangelist/willow/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-09-04'
 modified: '2026-09-04'
 tags:
 - Company
-apis: []
+- Consumer Health
+- Breast Pumps
+- Maternal Health
+- Medical Devices
+- Ecommerce
+- Agentic Commerce
+- MCP
+- UCP
+- agent-native
+- Shopify
+tags_raw:
+- company
+- consumer-health
+- breast-pumps
+- maternal-health
+- medical-devices
+- ecommerce
+- agentic-commerce
+- mcp
+- ucp
+- agent-native
+- shopify
+apis:
+- name: Willow Pump UCP Commerce MCP
+  description: >-
+    Willow's storefront agent surface — a JSON-RPC 2.0 Model Context Protocol endpoint implementing
+    the Universal Commerce Protocol 2026-08-25 shopping service. tools/list answers unauthenticated
+    and returns 13 tools with full JSON Schema 2020-12 input schemas: search_catalog, lookup_catalog
+    and get_product for the catalog; create/get/update/cancel_cart and create/get/update/complete/
+    cancel_checkout for the purchase flow; and get_order behind a signed agent JWT. Every tools/call
+    requires a resolvable UCP agent profile URI, complete_checkout requires an idempotency key, and
+    payment requires explicit buyer approval. The runtime is Shopify's universal-commerce server
+    running under Willow's own domain and transacting Willow's own catalog.
+  humanURL: https://onewillow.com/agents.md
+  baseURL: https://onewillow.com/api/ucp/mcp
+  image: https://onewillow.com/cdn/shop/files/OG-Image_db607121-7a26-49c9-b231-3a1e572a0fca_1200x630.jpg?v=1716782735
+  tags:
+  - Agentic Commerce
+  - MCP
+  - UCP
+  - Ecommerce
+  - Consumer Health
+  - agent-native
+  tags_raw:
+  - agentic-commerce
+  - mcp
+  - ucp
+  - ecommerce
+  - consumer-health
+  - agent-native
+  properties:
+  - type: Documentation
+    url: https://onewillow.com/agents.md
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/willow-domain-security.yml
 - type: Website
-  url: https://forgeglobal.com/willow_stock/
+  url: https://onewillow.com/
+- type: Documentation
+  url: https://onewillow.com/agents.md
+- type: LLMsTxt
+  url: llms/willow-llms.txt
+- type: MCPServer
+  url: mcp/willow-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: WellKnown
+  url: well-known/willow-well-known.yml
+- type: Authentication
+  url: authentication/willow-authentication.yml
+- type: OAuthScopes
+  url: scopes/willow-scopes.yml
+- type: Conventions
+  url: conventions/willow-conventions.yml
+- type: Idempotency
+  url: conventions/willow-conventions.yml
+- type: ErrorCatalog
+  url: errors/willow-problem-types.yml
+- type: Conformance
+  url: conformance/willow-conformance.yml
+- type: Lifecycle
+  url: lifecycle/willow-lifecycle.yml
+- type: DataModel
+  url: data-model/willow-data-model.yml
+- type: RateLimits
+  url: rate-limits/willow-rate-limits.yml
+- type: Plans
+  url: plans/willow-plans-pricing.yml
+- type: Support
+  url: https://help.onewillow.com/s
+- type: HelpCenter
+  url: https://onewillow.com/pages/willow-support
+- type: Blog
+  url: https://onewillow.com/blogs/all
+- type: SignUp
+  url: https://onewillow.com/account
+- type: TermsOfService
+  url: https://onewillow.com/policies/terms-of-service
+- type: PrivacyPolicy
+  url: https://onewillow.com/policies/privacy-policy
+x-enrichment:
+  date: '2026-09-04'
+  status: enriched
+  artifacts_added: 23
+  pass: local-v3

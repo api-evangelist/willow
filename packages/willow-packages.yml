@@ -1,0 +1,27 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  Registry searches on npm (registry.npmjs.org search), PyPI, and a GitHub user/org search for
+  "willow pump" / "onewillow" on 2026-09-04, plus a read of https://onewillow.com/agents.md and
+  https://onewillow.com/llms.txt for SDK links.
+package_count: 0
+official_sdk_count: 0
+note: >-
+  Willow ships no client library in any registry and runs no GitHub organization — the npm search for
+  "onewillow" returned 0 results, PyPI has no matching distribution, and the GitHub user/org search
+  for the company returned 0 accounts. This is expected: the agent surface is a hosted MCP endpoint
+  reachable with any MCP client, so there is nothing for a first-party SDK to wrap. The client the
+  store's own instructions recommend is Shopify's cross-store Shop skill
+  (https://shop.app/SKILL.md), which is Shopify's artifact, not Willow's, and is therefore not
+  recorded here as a Willow package.
+registries_probed:
+  - registry: npm
+    query: onewillow
+    results: 0
+  - registry: pypi
+    query: willow-pump
+    results: 0
+  - registry: github
+    query: willow pump (users + orgs)
+    results: 0
+packages: []

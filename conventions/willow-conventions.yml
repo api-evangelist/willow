@@ -1,0 +1,131 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  https://onewillow.com/agents.md, https://onewillow.com/llms.txt,
+  mcp/willow-tools-list.json (live tools/list, 2026-09-04), and observed response headers from
+  https://onewillow.com/api/ucp/mcp
+summary: >-
+  Willow has no REST API of its own; its callable surface is a JSON-RPC 2.0 / MCP endpoint speaking
+  UCP 2026-08-25. The cross-cutting semantics below are read from the live tool schemas, the store's
+  own published agent instructions, and observed response headers — not from an OpenAPI document,
+  because none exists.
+transport:
+  protocol: JSON-RPC 2.0 over HTTP POST
+  endpoint: https://onewillow.com/api/ucp/mcp
+  content_type: application/json
+  accept: application/json, text/event-stream
+  cors: 'access-control-allow-origin: *'
+auth:
+  style: agent-profile URI (required on every tools/call) + agent JWT for order scope; OAuth 2.0/OIDC for buyer accounts
+  detail: authentication/willow-authentication.yml
+idempotency:
+  supported: true
+  coverage: partial
+  mechanism: JSON-RPC parameter meta['idempotency-key'] (string, REQUIRED where present)
+  scope:
+    - complete_checkout
+  uncovered_writes:
+    - create_cart
+    - update_cart
+    - cancel_cart
+    - create_checkout
+    - update_checkout
+    - cancel_checkout
+  retention: not published
+  note: >-
+    Exactly one of the seven mutating tools requires an idempotency key, and it is the one that
+    commits money: complete_checkout declares meta['idempotency-key'] in its required list. Cart and
+    checkout mutation tools accept no key at all, so an agent retrying create_cart or update_checkout
+    after a timeout has no replay protection. Verified by reading every tool's inputSchema in the
+    live tools/list response rather than from prose.
+  evidence: mcp/willow-tools-list.json
+reversibility:
+  grade: documented
+  summary: >-
+    Both agent-initiated write flows have a first-class reversal tool, and neither carries a
+    published window. The one place Willow does state a window — the refund policy — has no API
+    operation behind it.
+  surfaces:
+    - write: create_cart / update_cart
+      reversal: cancel_cart
+      operation: cancel_cart
+      window: null
+      window_source: null
+      note: Cancels a cart. No time limit or post-conditions are published.
+    - write: create_checkout / update_checkout
+      reversal: cancel_checkout
+      operation: cancel_checkout
+      window: null
+      window_source: null
+      note: >-
+        Cancels a checkout. The store's agent instructions state a checkout cannot be paid without
+        contemporaneous buyer approval, so the reversible window is in practice "before
+        complete_checkout" — but that is inferred from the approval rule, not stated as a window.
+    - write: complete_checkout (creates an order and charges the buyer)
+      reversal: none-in-api
+      operation: null
+      window: 60 days from purchase date for pumps and pump accessories; 30 days for other items
+      window_source: https://onewillow.com/policies/refund-policy
+      note: >-
+        A completed order is reversible only through a human Customer Care agent — the refund policy
+        states the windows but exposes no API, MCP tool or webhook to start a return. An agent that
+        calls complete_checkout cannot undo it programmatically.
+pagination:
+  style: not published
+  note: >-
+    search_catalog exposes filters (categories, price min/max) and buyer context but the tools/list
+    schema declares no cursor, page or limit parameter; the documented read-only storefront JSON
+    endpoints (/products.json, /collections/{handle}/products.json) use Shopify's page/limit query
+    convention, which Willow does not document itself.
+field_expansion:
+  supported: false
+metadata:
+  supported: true
+  detail: >-
+    Every tool takes a meta object carrying the UCP agent profile, and cart/checkout tools take a
+    context object of buyer hints (address_country, address_region, postal_code, language, currency,
+    intent) plus a signals object (dev.ucp.buyer_ip, dev.ucp.user_agent).
+request_id_tracing:
+  supported: true
+  headers:
+    - x-request-id
+    - cf-ray
+    - server-timing (requestID)
+  note: Observed on live responses from https://onewillow.com/api/ucp/mcp.
+versioning:
+  style: dated protocol versions, negotiated by discovery
+  current: '2026-08-25'
+  header: x-shopify-ucp-mcp-api-version
+  prior_versions_served:
+    - '2026-04-08'
+    - '2026-01-23'
+  detail: lifecycle/willow-lifecycle.yml
+errors:
+  envelope: JSON-RPC 2.0 error object with a nested data object
+  shape: '{"jsonrpc":"2.0","id":<n>,"error":{"code":<int>,"message":<string>,"data":{"code":<slug>,"content":<string>,"continue_url":<url>}}}'
+  problem_json: false
+  detail: errors/willow-problem-types.yml
+rate_limits:
+  signalled: true
+  headers:
+    - shopify-complexity-score
+    - shopify-complexity-score-v2
+  exhaustion_status: 429
+  published_numbers: false
+  detail: rate-limits/willow-rate-limits.yml
+money:
+  representation: >-
+    Integer minor units paired with an ISO 4217 currency code — {"amount": 2500, "currency": "USD"}
+    is $25.00. Stated in every checkout tool description; agents must convert before quoting a buyer.
+identifiers:
+  format: Shopify global IDs, e.g. gid://shopify/Checkout/abc123
+human_approval:
+  required_for: complete_checkout
+  rule: >-
+    "Checkout requires human approval. Agents must not complete payment without explicit buyer
+    consent." — https://onewillow.com/agents.md
+dry_run_mode:
+  supported: false
+  note: >-
+    No test mode, sandbox store, or simulated checkout is published. create_cart and create_checkout
+    are the only rehearsal available and they create real resources.

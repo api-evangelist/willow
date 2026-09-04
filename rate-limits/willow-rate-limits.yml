@@ -1,0 +1,39 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  https://onewillow.com/agents.md (published rule) and observed response headers from
+  https://onewillow.com/api/ucp/mcp on 2026-09-04
+limit_count: 0
+note: >-
+  Willow states that its agent endpoint is rate limited but publishes no number, window or quota.
+  What it does return on every call is a running cost signal — shopify-complexity-score and
+  shopify-complexity-score-v2 — which an agent can use to pace itself even without a documented
+  ceiling. A tools/list cost 370 (v2 37) and a tools/call of search_catalog cost 4940 (v2 494),
+  so calls are priced by complexity rather than counted flat.
+policy:
+  statement: 'The MCP endpoint is rate-limited per IP. Back off on 429 responses.'
+  source: https://onewillow.com/agents.md
+  scope: per-IP
+  window: not published
+  limit: not published
+  burst: not published
+limits: []
+response_headers:
+  - name: shopify-complexity-score
+    observed: true
+    example: '4940'
+    description: Cost of the request just served, in platform complexity units.
+  - name: shopify-complexity-score-v2
+    observed: true
+    example: '494'
+    description: The same cost on the v2 scale.
+  - name: retry-after
+    observed: false
+    description: Not seen on any 2xx response; not provoked on a 429.
+exhaustion:
+  status_code: 429
+  source: https://onewillow.com/agents.md
+  observed: false
+standard_headers:
+  ietf_ratelimit_headers: false
+  x_ratelimit_headers: false

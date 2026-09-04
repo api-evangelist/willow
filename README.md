@@ -64,5 +64,24 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Willow is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://forgeglobal.com/willow_stock/
+Willow Innovations, Inc. is a Mountain View, California consumer health-technology company founded in
+2014 that makes wearable, in-bra breast pumps (Willow 360, Willow Go, Wave) sold direct to consumers
+at onewillow.com.
+
+Willow runs no developer programme and publishes no OpenAPI, API keys or developer portal — no
+`api.`, `developer.` or `docs.` host exists for either of its domains. What it does publish is an
+**agentic-commerce surface** on its own storefront:
+
+- `https://onewillow.com/.well-known/ucp.json` — a Universal Commerce Protocol 2026-08-25 merchant
+  profile (merchant "Willow Pump", origin onewillow.com)
+- `https://onewillow.com/api/ucp/mcp` — a live MCP endpoint whose `tools/list` answers
+  unauthenticated with 13 tools (catalog, cart, checkout, order) and full JSON Schema input schemas
+- `https://onewillow.com/agents.md` and `/llms.txt` — the store's own published agent instructions
+- OAuth 2.0 / OIDC / RFC 9728 discovery documents for Willow customer accounts on
+  `account.onewillow.com`
+
+The MCP runtime is Shopify's `universal-commerce` server; the endpoint, catalog and orders it serves
+are Willow's. Artifacts in this repo were probed and derived from those documents on 2026-09-04.
+
+- https://onewillow.com/
+- https://forgeglobal.com/willow_stock/ (secondary-market listing this profile was harvested from)

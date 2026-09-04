@@ -1,0 +1,99 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  Live probes of https://onewillow.com/.well-known/ucp.json, /.well-known/openid-configuration,
+  /.well-known/oauth-authorization-server, /.well-known/oauth-protected-resource and
+  https://onewillow.com/api/ucp/mcp on 2026-09-04.
+summary: >-
+  Willow's storefront asserts conformance to the agentic-commerce standards stack rather than to any
+  general API standard: UCP 2026-08-25 as the domain standard for its market, MCP as the transport,
+  and the OAuth 2.0 / OIDC / RFC 9728 discovery triad for buyer identity. Every entry below is
+  evidenced by a document the store actually serves.
+conformance:
+  - id: ucp-2026-08-25
+    name: Universal Commerce Protocol 2026-08-25 (shopping service)
+    conforms: true
+    domain_standard: true
+    evidence: >-
+      https://onewillow.com/.well-known/ucp.json declares ucp.version 2026-08-25 and the
+      dev.ucp.shopping service with transport "mcp"; the live endpoint answers with
+      x-shopify-ucp-mcp-api-version: 2026-08-25.
+    spec: https://ucp.dev/2026-08-25/specification/overview/
+    capabilities:
+      - dev.ucp.shopping.checkout
+      - dev.ucp.shopping.cart
+      - dev.ucp.shopping.fulfillment
+      - dev.ucp.shopping.discount
+      - dev.ucp.shopping.order
+      - dev.ucp.shopping.catalog.search
+      - dev.ucp.shopping.catalog.lookup
+      - dev.shopify.catalog
+    versions_still_served:
+      - '2026-04-08'
+      - '2026-01-23'
+  - id: mcp
+    name: Model Context Protocol
+    conforms: true
+    version: '2024-11-05'
+    evidence: >-
+      POST initialize to https://onewillow.com/api/ucp/mcp returned protocolVersion 2024-11-05 and
+      serverInfo {name universal-commerce, version 0.1.0}; tools/list returned 13 tools with
+      JSON Schema 2020-12 inputSchemas.
+  - id: json-schema-2020-12
+    name: JSON Schema Draft 2020-12
+    conforms: true
+    evidence: >-
+      Every tool inputSchema in the tools/list response declares
+      $schema https://json-schema.org/draft/2020-12/schema (mcp/willow-tools-list.json).
+  - id: oauth2
+    name: OAuth 2.0 Authorization Server Metadata (RFC 8414)
+    conforms: true
+    evidence: >-
+      https://onewillow.com/.well-known/oauth-authorization-server returns HTTP 200 with issuer,
+      authorization_endpoint, token_endpoint, jwks_uri, grant_types_supported and
+      code_challenge_methods_supported [S256].
+  - id: oidc
+    name: OpenID Connect Discovery 1.0
+    conforms: true
+    evidence: >-
+      https://onewillow.com/.well-known/openid-configuration returns HTTP 200 with issuer
+      https://shopify.com/authentication/15958015, RS256 id_token signing and standard claims.
+  - id: rfc9728
+    name: OAuth 2.0 Protected Resource Metadata (RFC 9728)
+    conforms: true
+    evidence: >-
+      https://onewillow.com/.well-known/oauth-protected-resource returns
+      {"resource":"https://onewillow.com","authorization_servers":[...],"bearer_methods_supported":["header"]}.
+  - id: pkce
+    name: PKCE (RFC 7636)
+    conforms: true
+    evidence: code_challenge_methods_supported ["S256"] in the authorization-server metadata.
+  - id: idempotency
+    name: Idempotent request replay on the payment-committing operation
+    conforms: partial
+    evidence: >-
+      complete_checkout requires meta["idempotency-key"]; no other mutating tool accepts one. See
+      conventions/willow-conventions.yml idempotency.coverage.
+  - id: rfc9457
+    name: RFC 9457 Problem Details
+    conforms: false
+    evidence: >-
+      Errors are JSON-RPC 2.0 objects ({code, message, data{code, content, continue_url}}), not
+      application/problem+json. See errors/willow-problem-types.yml.
+  - id: security-txt
+    name: RFC 9116 security.txt
+    conforms: false
+    evidence: /.well-known/security.txt returned 404 on onewillow.com, www.onewillow.com and willowpump.com.
+  - id: openapi
+    name: OpenAPI
+    conforms: false
+    evidence: >-
+      /openapi.json, /openapi.yaml, /swagger.json, /v1/openapi.json, /api-docs and /redoc all 404 (or
+      403 behind Cloudflare on willowpump.com) across every host; no developer, docs or api subdomain
+      exists in certificate transparency for onewillow.com or willowpump.com.
+certifications: []
+notes:
+  - >-
+    HIPAA is not asserted. Willow sells a consumer medical device direct to consumers and runs an
+    insurance-eligibility checker (insurance-checker.onewillow.com), but publishes no trust centre,
+    compliance page or certification list, so nothing is recorded here.

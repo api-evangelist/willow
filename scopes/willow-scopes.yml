@@ -1,0 +1,48 @@
+generated: '2026-09-04'
+method: probed
+source: https://onewillow.com/.well-known/openid-configuration
+docs: https://onewillow.com/.well-known/oauth-authorization-server
+summary: >-
+  The only OAuth surface Willow serves is Shopify Customer Accounts on its own account.onewillow.com
+  host. Its RFC 8414 / OIDC metadata declares four scopes. Willow publishes no scope reference page
+  of its own; the descriptions below are read from the scope names and the discovery document, and
+  are marked as such.
+issuer: https://shopify.com/authentication/15958015
+authorization_server: https://account.onewillow.com
+scope_count: 4
+scopes:
+  - name: openid
+    description: OpenID Connect — request an ID token for the signed-in Willow customer.
+    standard: true
+    description_method: derived
+  - name: email
+    description: Release the customer's email address and email_verified claim.
+    standard: true
+    description_method: derived
+  - name: customer-account-api:full
+    description: >-
+      Full access to the Willow customer account API for the signed-in buyer — orders, addresses,
+      payment methods and profile on onewillow.com.
+    standard: false
+    description_method: derived
+  - name: customer-account-mcp-api:full
+    description: >-
+      Full access to the MCP-addressable projection of the same customer account surface. This is the
+      scope an agent acting for a signed-in Willow buyer would hold.
+    standard: false
+    description_method: derived
+claims_supported:
+  - iss
+  - sub
+  - aud
+  - exp
+  - iat
+  - nonce
+  - sid
+  - email
+  - email_verified
+notes:
+  - >-
+    The anonymous UCP commerce MCP endpoint (https://onewillow.com/api/ucp/mcp) is NOT scope-gated —
+    it gates on a UCP agent profile URI and, for order reads, an agent JWT. See
+    authentication/willow-authentication.yml.

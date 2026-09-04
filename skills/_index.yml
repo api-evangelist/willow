@@ -1,0 +1,35 @@
+generated: '2026-09-04'
+method: generated
+source: mcp/willow-tools-list.json
+note: >-
+  Willow publishes no skills of its own and no OpenAPI. These two are authored from the 13 tools the
+  live UCP MCP endpoint returned on 2026-09-04 — every operation named in them is a real tool name
+  from that response, and every rule (buyer approval, idempotency key, minor-unit prices, refund
+  window) is quoted from a document Willow serves.
+skills:
+  - name: willow-catalog-discovery
+    file: skills/willow-catalog-discovery.md
+    api: Willow Pump UCP Commerce MCP Server
+    description: Search, look up and read Willow's product catalog through the anonymous UCP MCP endpoint.
+    operations:
+      - search_catalog
+      - lookup_catalog
+      - get_product
+    write_surface: false
+  - name: willow-agentic-checkout
+    file: skills/willow-agentic-checkout.md
+    api: Willow Pump UCP Commerce MCP Server
+    description: Cart-to-order purchase flow, with buyer approval, idempotency and the limits of reversal.
+    operations:
+      - create_cart
+      - get_cart
+      - update_cart
+      - cancel_cart
+      - create_checkout
+      - get_checkout
+      - update_checkout
+      - complete_checkout
+      - cancel_checkout
+      - get_order
+    write_surface: true
+    spends_money: true

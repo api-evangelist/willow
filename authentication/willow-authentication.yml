@@ -1,0 +1,105 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  https://onewillow.com/.well-known/openid-configuration,
+  https://onewillow.com/.well-known/oauth-authorization-server,
+  https://onewillow.com/.well-known/oauth-protected-resource,
+  https://onewillow.com/api/ucp/mcp (live JSON-RPC probes),
+  https://onewillow.com/agents.md
+docs: https://onewillow.com/agents.md
+summary: >-
+  Willow publishes no API key programme and no developer console. The only callable surface is the
+  UCP commerce MCP endpoint on its storefront, which layers three distinct auth models: anonymous
+  discovery, an agent-profile identity requirement for tool calls, and OAuth 2.0 / OIDC (Shopify
+  Customer Accounts) for buyer- and order-scoped access. There is no OpenAPI document, so this
+  profile is built from live probes and the provider's own agent instructions rather than from
+  declared securitySchemes.
+schemes:
+  - id: anonymous-discovery
+    type: none
+    applies_to:
+      - MCP initialize
+      - MCP tools/list
+      - GET /.well-known/ucp.json
+      - GET /agents.md
+      - GET /llms.txt
+      - GET /products.json
+      - GET /collections/{handle}/products.json
+    evidence: >-
+      POST {"jsonrpc":"2.0","id":1,"method":"tools/list"} to https://onewillow.com/api/ucp/mcp
+      returned HTTP 200 with 13 tools and no credential of any kind on 2026-09-04.
+  - id: ucp-agent-profile
+    type: agent-identity
+    in: json-rpc params
+    location: params.arguments.meta["ucp-agent"].profile
+    required: true
+    format: uri
+    applies_to: every tools/call invocation
+    description: >-
+      Each tool's inputSchema requires meta["ucp-agent"].profile — a URI the server dereferences to
+      resolve the calling agent's UCP profile. It is an identity/provenance requirement rather than a
+      secret: no key is issued by Willow, but a call without a resolvable profile is rejected.
+    failure_modes:
+      - code: -32001
+        data_code: invalid_profile_url
+        message: 'UCP discovery failed: Unable to fetch agent profile: Missing profile uri'
+      - code: -32001
+        data_code: profile_malformed
+        message: 'UCP discovery failed: Unable to fetch agent profile: Invalid content type'
+    evidence: >-
+      Observed 2026-09-04 by calling tools/call search_catalog with, and then without, a well-formed
+      profile URI.
+  - id: agent-jwt
+    type: http
+    scheme: bearer
+    bearer_format: JWT
+    applies_to:
+      - get_order
+      - order-scoped and buyer-scoped operations
+    description: >-
+      Order retrieval requires a signed agent JWT. Willow does not document the issuance flow itself;
+      the server's own error body points at Shopify's agent authentication documentation.
+    docs: https://shopify.dev/docs/agents/get-started/authentication
+    evidence: >-
+      tools/call get_order returned JSON-RPC error -32000 "AuthenticationRequired — Unauthorized: A
+      valid JWT is required to call get_order." on 2026-09-04.
+  - id: shopify-customer-accounts-oauth
+    type: oauth2
+    flows:
+      authorization_code:
+        authorization_url: https://account.onewillow.com/authentication/oauth/authorize
+        token_url: https://account.onewillow.com/authentication/oauth/token
+        pkce: S256
+      refresh_token: true
+      jwt_bearer: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+    issuer: https://shopify.com/authentication/15958015
+    jwks_uri: https://account.onewillow.com/authentication/.well-known/jwks.json
+    end_session_endpoint: https://account.onewillow.com/authentication/logout
+    token_endpoint_auth_methods:
+      - client_secret_basic
+      - client_secret_post
+    id_token_signing_alg:
+      - RS256
+    scopes:
+      - openid
+      - email
+      - customer-account-api:full
+      - customer-account-mcp-api:full
+    description: >-
+      Buyer-facing OAuth 2.0 + OpenID Connect for Willow's customer accounts, issued by Shopify on
+      Willow's shop id 15958015 and served on Willow's own account.onewillow.com host. Note
+      customer-account-mcp-api:full — the customer account surface itself is MCP-addressable.
+    evidence: >-
+      RFC 8414 / OIDC discovery documents fetched 2026-09-04 (HTTP 200, byte-identical to each other).
+protected_resources:
+  - resource: https://onewillow.com
+    authorization_servers:
+      - https://account.onewillow.com
+      - https://shopify.com/authentication/15958015
+    bearer_methods_supported:
+      - header
+    rfc: RFC 9728
+    source: https://onewillow.com/.well-known/oauth-protected-resource
+api_keys:
+  issued: false
+  note: Willow publishes no API key, client credential, or developer registration surface of its own.

@@ -1,0 +1,26 @@
+generated: '2026-09-04'
+method: searched
+source: https://onewillow.com/agents.md
+plan_count: 0
+note: >-
+  There is no API plan, tier, quota or paid developer product. Willow's agent surface is free and
+  anonymous to discover and call — a store exposing its own catalog and checkout so agents can buy
+  physical goods. The only prices Willow publishes are per-product retail prices in the storefront
+  catalog itself (https://onewillow.com/collections/all, and machine-readable at
+  https://onewillow.com/products.json and through the search_catalog / get_product MCP tools, quoted
+  in ISO 4217 minor units). Recording plan_count 0 rather than omitting the file: an honest zero,
+  because a commerce API of this shape has no metering to publish.
+access:
+  model: free-anonymous
+  signup_required: false
+  api_key_required: false
+  buyer_account: https://onewillow.com/account
+product_pricing:
+  machine_readable: true
+  surfaces:
+    - https://onewillow.com/products.json
+    - https://onewillow.com/collections/all/products.json
+    - MCP tool search_catalog / get_product (https://onewillow.com/api/ucp/mcp)
+  currency_format: integer minor units paired with an ISO 4217 code
+  human_page: https://onewillow.com/collections/all
+plans: []

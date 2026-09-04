@@ -1,0 +1,60 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  Live JSON-RPC probes of https://onewillow.com/api/ucp/mcp on 2026-09-04 (unknown method, malformed
+  agent profile, missing agent profile, and an unauthenticated order read).
+format: json-rpc-2.0
+problem_json: false
+envelope: '{"jsonrpc":"2.0","id":<request id>,"error":{"code":<int>,"message":<string>,"data":<object|string>}}'
+data_envelope: '{"code":<slug>,"content":<human readable detail>,"continue_url":<url a human can open>}'
+note: >-
+  Willow publishes no error reference. Every entry below was observed on the live endpoint; codes not
+  provoked are not listed rather than guessed. The nested data.code slug — not the JSON-RPC integer —
+  is the field an agent should branch on, because -32001 covers every UCP discovery failure.
+problem_types:
+  - code: -32001
+    data_code: invalid_profile_url
+    title: UCP discovery failed — missing agent profile URI
+    detail: 'Unable to fetch agent profile: Missing profile uri'
+    cause: >-
+      A tools/call (or an unknown method) was sent without params.arguments.meta["ucp-agent"].profile.
+    remediation: >-
+      Supply a resolvable https URI in meta["ucp-agent"].profile that serves a UCP agent profile
+      document.
+    retryable: false
+    observed: '2026-09-04'
+  - code: -32001
+    data_code: profile_malformed
+    title: UCP discovery failed — agent profile not parseable
+    detail: 'Unable to fetch agent profile: Invalid content type'
+    cause: >-
+      The profile URI resolved, but what it returned was not a UCP agent profile document (observed
+      with a URI serving text/html).
+    remediation: Serve the agent profile as JSON at the advertised URI.
+    retryable: false
+    observed: '2026-09-04'
+  - code: -32000
+    data_code: AuthenticationRequired
+    title: Authentication required
+    detail: >-
+      'Unauthorized: A valid JWT is required to call get_order. See
+      https://shopify.dev/docs/agents/get-started/authentication for instructions on generating a
+      token and authenticating your requests.'
+    cause: An order-scoped tool was called without a signed agent JWT.
+    remediation: Obtain and present an agent JWT; buyer-scoped access additionally needs the customer-account OAuth scopes.
+    retryable: false
+    observed: '2026-09-04'
+  - code: 429
+    data_code: rate_limited
+    title: Rate limited
+    detail: >-
+      Not provoked. The store's own agent instructions state "The MCP endpoint is rate-limited per
+      IP. Back off on 429 responses."
+    cause: Too many requests from one IP.
+    remediation: Exponential backoff; watch shopify-complexity-score-v2 on successful responses.
+    retryable: true
+    observed: null
+    source: https://onewillow.com/agents.md
+continue_url_convention: >-
+  Every observed error carries data.continue_url (https://willowpump.myshopify.com/) — the human
+  fallback an agent should hand its user when it cannot proceed.

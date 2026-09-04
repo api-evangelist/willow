@@ -1,0 +1,167 @@
+generated: '2026-09-04'
+method: derived
+source: mcp/willow-tools-list.json
+note: >-
+  Derived from the input schemas of the 13 tools the live UCP MCP endpoint returned on 2026-09-04.
+  No OpenAPI exists for this provider, so response shapes are not enumerated — only entities and
+  relationships the request schemas actually declare are recorded here. Fields no schema names are
+  omitted rather than assumed.
+identifier_scheme:
+  format: Shopify global ID URNs
+  examples:
+    - gid://shopify/Checkout/abc123
+  note: The checkout id format is stated in the tool descriptions; product and cart id formats are not.
+entities:
+  - name: Product
+    description: A sale-ready item in Willow's storefront catalog.
+    read_by:
+      - search_catalog
+      - lookup_catalog
+      - get_product
+    fields:
+      - name: id
+        type: string
+        note: Product ID accepted by get_product and lookup_catalog.
+      - name: selected
+        type: array
+        note: Selected variant options ({name, label}) used to resolve a variant.
+      - name: categories
+        type: array
+        note: Filterable category membership.
+      - name: price
+        type: object
+        note: Integer minor units + ISO 4217 currency; filterable by min/max.
+      - name: available
+        type: boolean
+  - name: ProductVariant
+    description: The purchasable form of a product; what a cart line item points at.
+    fields:
+      - name: id
+        type: string
+        note: "Referenced as line_items[].item.id — 'The Product Variant ID to add or update.'"
+  - name: Cart
+    description: A pre-checkout basket of line items for a buyer.
+    written_by:
+      - create_cart
+      - update_cart
+      - cancel_cart
+    read_by:
+      - get_cart
+    fields:
+      - name: id
+        type: string
+      - name: line_items
+        type: array
+      - name: buyer
+        type: object
+      - name: context
+        type: object
+  - name: LineItem
+    description: One product variant and quantity inside a cart or checkout.
+    fields:
+      - name: id
+        type: string
+      - name: quantity
+        type: integer
+      - name: item.id
+        type: string
+        note: Product variant reference.
+  - name: Buyer
+    description: The person the agent is acting for.
+    fields:
+      - name: email
+        type: string
+      - name: phone_number
+        type: string
+  - name: Checkout
+    description: A priced, addressable purchase in progress; completing it produces an Order.
+    written_by:
+      - create_checkout
+      - update_checkout
+      - complete_checkout
+      - cancel_checkout
+    read_by:
+      - get_checkout
+    fields:
+      - name: id
+        type: string
+        note: 'gid://shopify/Checkout/...'
+      - name: line_items
+        type: array
+      - name: buyer
+        type: object
+      - name: payment.instruments
+        type: array
+      - name: fulfillment.methods
+        type: array
+      - name: discounts.codes
+        type: array
+      - name: attribution
+        type: object
+        note: referring_domain, click_id_tag/value, activity_id_tag/value, utm_* parameters.
+      - name: context
+        type: object
+  - name: PaymentInstrument
+    description: A card, token or wallet credential bound to a checkout.
+    fields:
+      - name: id
+        type: string
+      - name: handler_id
+        type: string
+        note: One of the handlers in /.well-known/ucp.json — gpay, shopify.card, shop_pay, apple-pay.
+      - name: type
+        type: string
+      - name: credential
+        type: object
+      - name: billing_address
+        type: object
+  - name: FulfillmentMethod
+    description: A shipping (or other) delivery method attached to a checkout.
+  - name: Discount
+    description: A promo code applied to a cart or checkout; codes are case-insensitive and replace prior submissions.
+  - name: Order
+    description: The result of a completed checkout.
+    read_by:
+      - get_order
+    note: Order reads require a signed agent JWT; no order write or refund operation is exposed.
+relationships:
+  - from: Cart
+    to: LineItem
+    type: has_many
+    via: cart.line_items
+  - from: Checkout
+    to: LineItem
+    type: has_many
+    via: checkout.line_items
+  - from: LineItem
+    to: ProductVariant
+    type: belongs_to
+    via: line_items[].item.id
+  - from: ProductVariant
+    to: Product
+    type: belongs_to
+    via: catalog.selected variant options
+  - from: Cart
+    to: Buyer
+    type: has_one
+    via: cart.buyer
+  - from: Checkout
+    to: Buyer
+    type: has_one
+    via: checkout.buyer
+  - from: Checkout
+    to: PaymentInstrument
+    type: has_many
+    via: checkout.payment.instruments
+  - from: Checkout
+    to: FulfillmentMethod
+    type: has_many
+    via: checkout.fulfillment.methods
+  - from: Checkout
+    to: Discount
+    type: has_many
+    via: checkout.discounts.codes
+  - from: Checkout
+    to: Order
+    type: has_one
+    via: complete_checkout returns the order ID

@@ -1,0 +1,160 @@
+generated: '2026-09-04'
+method: probed
+source: https://onewillow.com/api/ucp/mcp
+name: Willow Pump UCP Commerce MCP Server
+description: >-
+  Willow's online store at onewillow.com exposes a live, anonymous Model Context Protocol endpoint
+  implementing the Universal Commerce Protocol (UCP) shopping service. An MCP client POSTs JSON-RPC
+  to https://onewillow.com/api/ucp/mcp; tools/list answers unauthenticated and returns 13 tools with
+  full JSON Schema 2020-12 input schemas covering catalog search and lookup, cart lifecycle, checkout
+  lifecycle, and order retrieval. The runtime is Shopify's `universal-commerce` server (serverInfo
+  name universal-commerce, version 0.1.0) served under Willow's own domain; the merchant identity in
+  the discovery document is Willow's (merchant_name "Willow Pump", merchant_origin onewillow.com,
+  Shopify shop id 15958015).
+ownership_note: >-
+  Platform-authored runtime, first-party surface. The MCP server code and tool schemas are Shopify's
+  UCP implementation, not software Willow wrote; the endpoint, catalog, prices, carts and orders it
+  serves are Willow's. Recorded as Willow's agent surface because it answers on Willow's registrable
+  domain and transacts Willow's own products — not as a Willow-authored protocol implementation.
+deployment:
+  mode: remote
+  endpoint: https://onewillow.com/api/ucp/mcp
+  auth: none
+  verified: probed
+  note: >-
+    tools/list and initialize answer anonymously. tools/call additionally requires a resolvable UCP
+    agent profile URI in meta["ucp-agent"].profile, and order-scoped tools require a signed agent JWT
+    (observed: get_order returns JSON-RPC -32000 "AuthenticationRequired ... a valid JWT is required").
+    A second, equivalent endpoint answers on the Shopify-canonical host
+    https://willowpump.myshopify.com/api/ucp/mcp. The endpoint is POST-only: a GET of
+    https://onewillow.com/api/ucp/mcp returns the storefront's HTML 404 page, so a link-liveness
+    crawler will read it as dead. It is not — it answered JSON-RPC 200 on 2026-09-04.
+protocol:
+  jsonrpc: '2.0'
+  mcp_protocol_version: '2024-11-05'
+  server_info:
+    name: universal-commerce
+    version: 0.1.0
+  server_capabilities:
+    - tools
+    - prompts
+    - resources
+    - logging
+  ucp_version: '2026-08-25'
+  ucp_api_version_header: x-shopify-ucp-mcp-api-version
+  transport: mcp (HTTP POST, application/json; Accept application/json, text/event-stream)
+discovery:
+  ucp_profile: https://onewillow.com/.well-known/ucp.json
+  agent_instructions:
+    - https://onewillow.com/agents.md
+    - https://onewillow.com/llms.txt
+  alternate_endpoint: https://willowpump.myshopify.com/api/ucp/mcp
+  supported_ucp_versions:
+    - '2026-08-25'
+    - '2026-04-08'
+    - '2026-01-23'
+tool_count: 13
+tools_manifest: mcp/willow-tools-list.json
+tools:
+  - name: search_catalog
+    category: catalog
+    write: false
+    auth: agent-profile
+    description: Search for products from the online store, hosted on Shopify.
+  - name: lookup_catalog
+    category: catalog
+    write: false
+    auth: agent-profile
+    description: Look up multiple products or variants by identifier.
+  - name: get_product
+    category: catalog
+    write: false
+    auth: agent-profile
+    description: Retrieve complete product detail by identifier. Returns a singular product.
+  - name: create_cart
+    category: cart
+    write: true
+    auth: agent-profile
+    description: Creates a new cart.
+  - name: get_cart
+    category: cart
+    write: false
+    auth: agent-profile
+    description: Get the cart contents.
+  - name: update_cart
+    category: cart
+    write: true
+    auth: agent-profile
+    description: Perform updates to a cart.
+  - name: cancel_cart
+    category: cart
+    write: true
+    reverses: create_cart
+    auth: agent-profile
+    description: Cancels a cart.
+  - name: create_checkout
+    category: checkout
+    write: true
+    auth: agent-profile
+    description: Creates a checkout. Returns checkout details, line items, totals, discounts and taxes.
+  - name: get_checkout
+    category: checkout
+    write: false
+    auth: agent-profile
+    description: Returns details about the checkout, including line items, totals, discounts and taxes.
+  - name: update_checkout
+    category: checkout
+    write: true
+    auth: agent-profile
+    description: Updates a checkout (buyer, shipping address, delivery method, payment).
+  - name: complete_checkout
+    category: checkout
+    write: true
+    idempotent: true
+    idempotency_key: meta['idempotency-key'] (REQUIRED)
+    auth: agent-profile
+    description: >-
+      Completes a checkout and returns the checkout result, including order ID. Buyer approval of
+      payment is required by the store's own agent instructions.
+  - name: cancel_checkout
+    category: checkout
+    write: true
+    reverses: create_checkout
+    auth: agent-profile
+    description: Cancels a checkout.
+  - name: get_order
+    category: order
+    write: false
+    auth: jwt
+    description: >-
+      Get the details of an order. Observed to require a signed agent JWT — returns JSON-RPC -32000
+      AuthenticationRequired without one.
+capabilities:
+  - dev.ucp.shopping.catalog.search
+  - dev.ucp.shopping.catalog.lookup
+  - dev.ucp.shopping.cart
+  - dev.ucp.shopping.checkout
+  - dev.ucp.shopping.fulfillment
+  - dev.ucp.shopping.discount
+  - dev.ucp.shopping.order
+  - dev.shopify.catalog
+payment_handlers:
+  - com.google.pay
+  - dev.shopify.card
+  - dev.shopify.shop_pay
+x-evidence:
+  fetched: '2026-09-04'
+  tools_list:
+    url: https://onewillow.com/api/ucp/mcp
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+    http_status: 200
+    content_type: application/json; charset=utf-8
+    tool_count: 13
+  initialize:
+    url: https://onewillow.com/api/ucp/mcp
+    http_status: 200
+    protocol_version: '2024-11-05'
+  discovery:
+    url: https://onewillow.com/.well-known/ucp.json
+    http_status: 200

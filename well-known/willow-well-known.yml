@@ -1,0 +1,164 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  Direct HTTP probes of the named /.well-known/ path list against every host this record knows —
+  the registrable domain onewillow.com (+ www), the legacy brand domain willowpump.com, the
+  customer-account host account.onewillow.com named in the RFC 9728 protected-resource document,
+  and the Salesforce-hosted help center help.onewillow.com.
+note: >-
+  Willow's storefront runs on Shopify under its own domains, so the discovery surface it serves is
+  the Shopify commerce stack published at onewillow.com: an RFC 8414 / OIDC pair for Shopify
+  Customer Accounts (issuer shopify.com/authentication/15958015 — Willow's own shop id 15958015),
+  an RFC 9728 protected-resource document naming account.onewillow.com as the authorization
+  server, and a Universal Commerce Protocol (UCP) merchant profile at /.well-known/ucp.json whose
+  payment handler config carries merchant_name "Willow Pump" and merchant_origin onewillow.com.
+  No security.txt, api-catalog, ai-plugin.json, apis.json or AAuth resource is served on any host.
+  A path-echo negative control (/.well-known/willow-negative-control-7f3ab91c.json) returned 404 on
+  every Shopify-served host, so the 200s recorded below are real documents, not a catch-all router.
+path_echo_control: passed
+hit_count: 4
+hosts:
+  - host: https://onewillow.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 200
+        file: willow-openid-configuration.json
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        file: willow-oauth-authorization-server.json
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+        file: willow-oauth-protected-resource.json
+      - path: /.well-known/ucp.json
+        status: 200
+        file: willow-ucp.json
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/apis.json
+        status: 404
+      - path: /apis.json
+        status: 404
+      - path: /apis.yml
+        status: 404
+      - path: /.well-known/aauth-resource.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/acp.json
+        status: 404
+      - path: /.well-known/willow-negative-control-7f3ab91c.json
+        status: 404
+  - host: https://www.onewillow.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 200
+        file: willow-openid-configuration.json
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        file: willow-oauth-authorization-server.json
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+      - path: /.well-known/ucp.json
+        status: 200
+        file: willow-ucp.json
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/apis.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/aauth-resource.json
+        status: 404
+      - path: /.well-known/willow-negative-control-7f3ab91c.json
+        status: 404
+  - host: https://willowpump.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 200
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+      - path: /.well-known/ucp.json
+        status: 200
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/apis.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/aauth-resource.json
+        status: 404
+      - path: /.well-known/willow-negative-control-7f3ab91c.json
+        status: 404
+  - host: https://account.onewillow.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 200
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/apis.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/ucp.json
+        status: 404
+      - path: /.well-known/aauth-resource.json
+        status: 404
+      - path: /.well-known/willow-negative-control-7f3ab91c.json
+        status: 404
+  - host: https://help.onewillow.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 401
+      - path: /.well-known/openid-configuration
+        status: 200
+        note: >-
+          Salesforce Experience Cloud OIDC metadata for the help center's own identity provider
+          (help.onewillow.com/services/auth/idp/oidc/*), not an API authorization surface. Not saved.
+      - path: /.well-known/oauth-authorization-server
+        status: 401
+      - path: /.well-known/oauth-protected-resource
+        status: 401
+      - path: /.well-known/api-catalog
+        status: 401
+      - path: /.well-known/ai-plugin.json
+        status: 401
+      - path: /.well-known/apis.json
+        status: 401
+      - path: /.well-known/agent-card.json
+        status: 401
+      - path: /.well-known/agent.json
+        status: 401
+      - path: /.well-known/aauth-resource.json
+        status: 401
+      - path: /.well-known/willow-negative-control-7f3ab91c.json
+        status: 401
