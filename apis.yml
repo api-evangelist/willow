@@ -25,7 +25,7 @@ tags:
 - E-Commerce
 - Agentic Commerce
 - MCP
-- UCP
+- Universal Commerce Protocol
 - agent-native
 - Shopify
 tags_raw:
@@ -57,7 +57,7 @@ apis:
   tags:
   - Agentic Commerce
   - MCP
-  - UCP
+  - Universal Commerce Protocol
   - E-Commerce
   - Consumer Health
   - agent-native
