@@ -26,7 +26,7 @@ tags:
 - Agentic Commerce
 - MCP
 - Universal Commerce Protocol
-- agent-native
+- Agent-Native
 - Shopify
 tags_raw:
 - company
@@ -60,7 +60,7 @@ apis:
   - Universal Commerce Protocol
   - E-Commerce
   - Consumer Health
-  - agent-native
+  - Agent-Native
   tags_raw:
   - agentic-commerce
   - mcp
@@ -71,6 +71,9 @@ apis:
   properties:
   - type: Documentation
     url: https://onewillow.com/agents.md
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
