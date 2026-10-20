@@ -2,24 +2,29 @@ generated: '2026-09-04'
 method: probed
 source: https://onewillow.com/api/ucp/mcp
 name: Willow Pump UCP Commerce MCP Server
-description: Willow's online store at onewillow.com exposes a live, anonymous Model Context Protocol endpoint implementing the Universal Commerce
-  Protocol (UCP) shopping service. An MCP client POSTs JSON-RPC to https://onewillow.com/api/ucp/mcp; tools/list answers unauthenticated and returns
-  13 tools with full JSON Schema 2020-12 input schemas covering catalog search and lookup, cart lifecycle, checkout lifecycle, and order retrieval.
-  The runtime is Shopify's `universal-commerce` server (serverInfo name universal-commerce, version 0.1.0) served under Willow's own domain; the
-  merchant identity in the discovery document is Willow's (merchant_name "Willow Pump", merchant_origin onewillow.com, Shopify shop id 15958015).
-ownership_note: Platform-authored runtime, first-party surface. The MCP server code and tool schemas are Shopify's UCP implementation, not software
-  Willow wrote; the endpoint, catalog, prices, carts and orders it serves are Willow's. Recorded as Willow's agent surface because it answers
-  on Willow's registrable domain and transacts Willow's own products — not as a Willow-authored protocol implementation.
+description: Willow's online store at onewillow.com exposes a live, anonymous Model Context Protocol endpoint
+  implementing the Universal Commerce Protocol (UCP) shopping service. An MCP client POSTs JSON-RPC to
+  https://onewillow.com/api/ucp/mcp; tools/list answers unauthenticated and returns 13 tools with full
+  JSON Schema 2020-12 input schemas covering catalog search and lookup, cart lifecycle, checkout lifecycle,
+  and order retrieval. The runtime is Shopify's `universal-commerce` server (serverInfo name universal-commerce,
+  version 0.1.0) served under Willow's own domain; the merchant identity in the discovery document is
+  Willow's (merchant_name "Willow Pump", merchant_origin onewillow.com, Shopify shop id 15958015).
+ownership_note: Platform-authored runtime, first-party surface. The MCP server code and tool schemas are
+  Shopify's UCP implementation, not software Willow wrote; the endpoint, catalog, prices, carts and orders
+  it serves are Willow's. Recorded as Willow's agent surface because it answers on Willow's registrable
+  domain and transacts Willow's own products — not as a Willow-authored protocol implementation.
 deployment:
   mode: remote
   endpoint: https://onewillow.com/api/ucp/mcp
   auth: none
   verified: probed
-  note: 'tools/list and initialize answer anonymously. tools/call additionally requires a resolvable UCP agent profile URI in meta["ucp-agent"].profile,
-    and order-scoped tools require a signed agent JWT (observed: get_order returns JSON-RPC -32000 "AuthenticationRequired ... a valid JWT is
-    required"). A second, equivalent endpoint answers on the Shopify-canonical host https://willowpump.myshopify.com/api/ucp/mcp. The endpoint
-    is POST-only: a GET of https://onewillow.com/api/ucp/mcp returns the storefront''s HTML 404 page, so a link-liveness crawler will read it
-    as dead. It is not — it answered JSON-RPC 200 on 2026-09-04.'
+  note: 'tools/list and initialize answer anonymously. tools/call additionally requires a resolvable UCP
+    agent profile URI in meta["ucp-agent"].profile, and order-scoped tools require a signed agent JWT
+    (observed: get_order returns JSON-RPC -32000 "AuthenticationRequired ... a valid JWT is required").
+    A second, equivalent endpoint answers on the Shopify-canonical host https://willowpump.myshopify.com/api/ucp/mcp.
+    The endpoint is POST-only: a GET of https://onewillow.com/api/ucp/mcp returns the storefront''s HTML
+    404 page, so a link-liveness crawler will read it as dead. It is not — it answered JSON-RPC 200 on
+    2026-09-04.'
 protocol:
   jsonrpc: '2.0'
   mcp_protocol_version: '2024-11-05'
@@ -47,76 +52,264 @@ discovery:
 tool_count: 13
 tools_manifest: mcp/willow-tools-list.json
 tools:
-- name: search_catalog
-  category: catalog
-  write: false
-  auth: agent-profile
-  description: Search for products from the online store, hosted on Shopify.
-- name: lookup_catalog
-  category: catalog
-  write: false
-  auth: agent-profile
-  description: Look up multiple products or variants by identifier.
-- name: get_product
-  category: catalog
-  write: false
-  auth: agent-profile
-  description: Retrieve complete product detail by identifier. Returns a singular product.
-- name: create_cart
-  category: cart
-  write: true
-  auth: agent-profile
-  description: Creates a new cart.
-- name: get_cart
-  category: cart
-  write: false
-  auth: agent-profile
-  description: Get the cart contents.
-- name: update_cart
-  category: cart
-  write: true
-  auth: agent-profile
-  description: Perform updates to a cart.
-- name: cancel_cart
-  category: cart
-  write: true
-  reverses: create_cart
-  auth: agent-profile
-  description: Cancels a cart.
-- name: create_checkout
-  category: checkout
-  write: true
-  auth: agent-profile
-  description: Creates a checkout. Returns checkout details, line items, totals, discounts and taxes.
 - name: get_checkout
+  description: 'Returns details about the checkout, including line items, totals, and any applicable discounts
+    or taxes.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
   category: checkout
   write: false
   auth: agent-profile
-  description: Returns details about the checkout, including line items, totals, discounts and taxes.
-- name: update_checkout
+- name: create_checkout
+  description: 'Creates a checkout. Returns checkout details, including line items, totals, and any applicable
+    discounts or taxes.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
   category: checkout
   write: true
   auth: agent-profile
-  description: Updates a checkout (buyer, shipping address, delivery method, payment).
+- name: update_checkout
+  description: 'Updates a checkout. Returns checkout details, including line items, totals, and any applicable
+    discounts or taxes.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
+  category: checkout
+  write: true
+  auth: agent-profile
 - name: complete_checkout
+  description: 'Completes a checkout and returns the checkout result. Returns details about the completed
+    checkout, including order ID, Thank You Page URL, or any errors encountered.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
   category: checkout
   write: true
   idempotent: true
   idempotency_key: meta['idempotency-key'] (REQUIRED)
   auth: agent-profile
-  description: Completes a checkout and returns the checkout result, including order ID. Buyer approval of payment is required by the store's
-    own agent instructions.
 - name: cancel_checkout
+  description: 'Cancels a checkout.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
   category: checkout
   write: true
   reverses: create_checkout
   auth: agent-profile
-  description: Cancels a checkout.
+- name: get_cart
+  description: 'Get the cart contents
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
+  category: cart
+  write: false
+  auth: agent-profile
+- name: create_cart
+  description: 'Creates a new cart
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
+  category: cart
+  write: true
+  auth: agent-profile
+- name: update_cart
+  description: 'Perform updates to a cart.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
+  category: cart
+  write: true
+  auth: agent-profile
+- name: cancel_cart
+  description: 'Cancels a cart.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
+  category: cart
+  write: true
+  reverses: create_cart
+  auth: agent-profile
 - name: get_order
+  description: 'Get the details of an order
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
   category: order
   write: false
   auth: jwt
-  description: Get the details of an order. Observed to require a signed agent JWT — returns JSON-RPC -32000 AuthenticationRequired without one.
+- name: search_catalog
+  description: 'Search for products from the online store, hosted on Shopify.
+
+
+    This tool can be used to search for products using natural language queries, specific filter criteria,
+    or both.
+
+    At least one of query or filters must be provided.
+
+
+    Results are paginated, with initial results limited to improve experience.
+
+    Use the pagination.cursor from the response to fetch additional pages when users request more results.
+
+
+    Response conforms to the UCP catalog search capability (dev.ucp.shopping.catalog.search).
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
+  category: catalog
+  write: false
+  auth: agent-profile
+- name: lookup_catalog
+  description: 'Look up multiple products or variants by identifier.
+
+    Use this tool to resolve multiple product/variant IDs in a single request.
+
+
+    Supports:
+
+    - Product IDs (gid://shopify/Product/...): Returns product with match: "featured"
+
+    - Variant IDs (gid://shopify/ProductVariant/...): Returns parent product with the exact variant
+
+
+    Results are grouped by product. Each variant includes an inputs array showing
+
+    which request ID resolved to it and whether the match was exact or featured.
+
+    In versions that require input correlations, only matched variants are returned.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).
+
+
+
+    Maximum 10 IDs per request.'
+  category: catalog
+  write: false
+  auth: agent-profile
+- name: get_product
+  description: 'Retrieve complete product detail by identifier. Returns a singular product
+
+    with a relevant set of variants, exact pricing, and real-time availability.
+
+    Supports interactive option selection via selected and preferences parameters
+
+    for variant narrowing and availability signals. Use for product detail page
+
+    rendering and purchase decisions.
+
+
+    Prices in the response are integers in the currency''s ISO 4217 minor units, paired with
+
+    a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500,
+
+    "currency": "USD"} is $25.00. Convert to major units before quoting a price to a buyer
+
+    (divide by 100 for two-decimal currencies such as USD and EUR; zero-decimal currencies
+
+    such as JPY are already whole units).'
+  category: catalog
+  write: false
+  auth: agent-profile
 capabilities:
 - dev.ucp.shopping.catalog.search
 - dev.ucp.shopping.catalog.lookup
@@ -185,7 +378,8 @@ tool_quality:
   source: mcp/willow-tools-list.json
   measured: '2026-10-20'
   scored: false
-  note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned from Glimind's agent-readiness audit.
+  note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
+    from Glimind's agent-readiness audit.
 additional_endpoints:
 - endpoint: https://onewillow.com/api/mcp
   mode: remote
@@ -196,3 +390,4 @@ additional_endpoints:
   - search_shop_policies_and_faqs
   source: mcp/willow-storefront-mcp-tools-list.json
   note: Shopify Storefront MCP; tools/list HTTP 200 anonymous.
+tools_count: 13
