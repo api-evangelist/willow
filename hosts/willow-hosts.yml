@@ -1,0 +1,110 @@
+generated: '2026-10-20'
+method: derived
+source: the pre-flight dossier, apis.yml pointers, spec servers, well-known, vendors -- nothing fetched here
+generator: derive-hosts.py
+summary:
+  hosts: 8
+  own: 3
+  other_domain: 4
+  platform: 1
+  roles:
+  - api
+  - other
+  - support
+  - website
+hosts:
+- host: api.onewillow.com
+  found_by:
+  - contract-discovery
+  types: []
+  serves: []
+  registrable_domain: onewillow.com
+  role: api
+  relation: own
+- host: help.onewillow.com
+  found_by:
+  - pointer
+  - probed
+  - site-links
+  - docs-index
+  - contract-discovery
+  - well-known
+  types:
+  - Support
+  serves:
+  - docs
+  registrable_domain: onewillow.com
+  role: support
+  relation: own
+- host: onewillow.com
+  found_by:
+  - pointer
+  - apis[]
+  - probed
+  - docs-index
+  - contract-discovery
+  - well-known
+  - vendor-detect
+  types:
+  - BlogRSS
+  - Website
+  - Documentation
+  - HelpCenter
+  - Blog
+  - SignUp
+  - TermsOfService
+  - PrivacyPolicy
+  serves:
+  - api
+  - docs
+  - cdn
+  - hosting
+  vendor: cloudflare
+  registrable_domain: onewillow.com
+  role: website
+  relation: own
+- host: shop.app
+  found_by:
+  - docs-index
+  types: []
+  serves:
+  - docs
+  registrable_domain: shop.app
+  role: other
+  relation: other-domain
+- host: shop.com
+  found_by:
+  - docs-index
+  types: []
+  serves:
+  - docs
+  registrable_domain: shop.com
+  role: other
+  relation: other-domain
+- host: shopify.dev
+  found_by:
+  - docs-index
+  types: []
+  serves:
+  - docs
+  registrable_domain: shopify.dev
+  role: other
+  relation: other-domain
+- host: ucp.dev
+  found_by:
+  - docs-index
+  types: []
+  serves:
+  - docs
+  registrable_domain: ucp.dev
+  role: other
+  relation: other-domain
+- host: www.shopify.com
+  found_by:
+  - docs-index
+  types: []
+  serves:
+  - docs
+  registrable_domain: shopify.com
+  role: other
+  relation: platform

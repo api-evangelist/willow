@@ -1,21 +1,18 @@
 aid: willow
 name: Willow
-description: >-
-  Willow Innovations, Inc. is a Mountain View, California consumer health-technology company founded
-  in 2014 that makes wearable, in-bra breast pumps — the Willow 360, Willow Go and the Wave manual
-  pump — sold direct to consumers at onewillow.com and paired with a mobile app that tracks output
-  and controls suction. Willow publishes no developer programme, API keys or OpenAPI, but its
-  storefront is an agent-callable surface: it serves a Universal Commerce Protocol merchant profile
-  at /.well-known/ucp.json and a live, anonymous MCP endpoint at /api/ucp/mcp exposing 13 tools for
-  catalog search, cart, checkout and order retrieval, alongside published agent instructions
-  (agents.md, llms.txt) and OAuth 2.0/OIDC customer-account discovery documents.
+description: 'Willow Innovations, Inc. is a Mountain View, California consumer health-technology company founded in 2014 that makes wearable,
+  in-bra breast pumps — the Willow 360, Willow Go and the Wave manual pump — sold direct to consumers at onewillow.com and paired with a mobile
+  app that tracks output and controls suction. Willow publishes no developer programme, API keys or OpenAPI, but its storefront is an agent-callable
+  surface: it serves a Universal Commerce Protocol merchant profile at /.well-known/ucp.json and a live, anonymous MCP endpoint at /api/ucp/mcp
+  exposing 13 tools for catalog search, cart, checkout and order retrieval, alongside published agent instructions (agents.md, llms.txt) and OAuth
+  2.0/OIDC customer-account discovery documents.'
 image: https://onewillow.com/cdn/shop/files/OG-Image_db607121-7a26-49c9-b231-3a1e572a0fca_1200x630.jpg?v=1716782735
 url: https://raw.githubusercontent.com/api-evangelist/willow/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
 specificationVersion: '0.20'
 created: '2026-09-04'
-modified: '2026-10-06'
+modified: '2026-10-20'
 tags:
 - Company
 - Consumer Health
@@ -40,46 +37,20 @@ tags_raw:
 - ucp
 - agent-native
 - shopify
-apis:
-- name: Willow Pump UCP Commerce MCP
-  description: >-
-    Willow's storefront agent surface — a JSON-RPC 2.0 Model Context Protocol endpoint implementing
-    the Universal Commerce Protocol 2026-08-25 shopping service. tools/list answers unauthenticated
-    and returns 13 tools with full JSON Schema 2020-12 input schemas: search_catalog, lookup_catalog
-    and get_product for the catalog; create/get/update/cancel_cart and create/get/update/complete/
-    cancel_checkout for the purchase flow; and get_order behind a signed agent JWT. Every tools/call
-    requires a resolvable UCP agent profile URI, complete_checkout requires an idempotency key, and
-    payment requires explicit buyer approval. The runtime is Shopify's universal-commerce server
-    running under Willow's own domain and transacting Willow's own catalog.
-  humanURL: https://onewillow.com/agents.md
-  baseURL: https://onewillow.com/api/ucp/mcp
-  image: https://onewillow.com/cdn/shop/files/OG-Image_db607121-7a26-49c9-b231-3a1e572a0fca_1200x630.jpg?v=1716782735
-  tags:
-  - Agentic Commerce
-  - MCP
-  - Universal Commerce Protocol
-  - E-Commerce
-  - Consumer Health
-  - Agent-Native
-  tags_raw:
-  - agentic-commerce
-  - mcp
-  - ucp
-  - ecommerce
-  - consumer-health
-  - agent-native
-  properties:
-  - type: Documentation
-    url: https://onewillow.com/agents.md
-  x-surface: platform-generated
-  x-platform: shopify
-  x-platform-surface: ucp
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: GettingStarted
+  url: https://shopify.dev/docs/agents/get-started/quickstart
+- type: Deprecation
+  url: lifecycle/willow-lifecycle.yml
+- type: Hosts
+  url: hosts/willow-hosts.yml
+- type: Vendors
+  url: vendors/willow-vendors.yml
 - url: https://onewillow.com/blogs/all.atom
   type: BlogRSS
 - type: DomainSecurity
@@ -128,8 +99,76 @@ common:
   url: https://onewillow.com/policies/terms-of-service
 - type: PrivacyPolicy
   url: https://onewillow.com/policies/privacy-policy
+apis:
+- name: Willow Pump UCP Commerce MCP
+  description: 'Willow''s storefront agent surface — a JSON-RPC 2.0 Model Context Protocol endpoint implementing the Universal Commerce Protocol
+    2026-08-25 shopping service. tools/list answers unauthenticated and returns 13 tools with full JSON Schema 2020-12 input schemas: search_catalog,
+    lookup_catalog and get_product for the catalog; create/get/update/cancel_cart and create/get/update/complete/ cancel_checkout for the purchase
+    flow; and get_order behind a signed agent JWT. Every tools/call requires a resolvable UCP agent profile URI, complete_checkout requires an
+    idempotency key, and payment requires explicit buyer approval. The runtime is Shopify''s universal-commerce server running under Willow''s
+    own domain and transacting Willow''s own catalog.'
+  humanURL: https://onewillow.com/agents.md
+  baseURL: https://onewillow.com/api/ucp/mcp
+  image: https://onewillow.com/cdn/shop/files/OG-Image_db607121-7a26-49c9-b231-3a1e572a0fca_1200x630.jpg?v=1716782735
+  tags:
+  - Agentic Commerce
+  - MCP
+  - Universal Commerce Protocol
+  - E-Commerce
+  - Consumer Health
+  - Agent-Native
+  tags_raw:
+  - agentic-commerce
+  - mcp
+  - ucp
+  - ecommerce
+  - consumer-health
+  - agent-native
+  properties:
+  - type: Documentation
+    url: https://onewillow.com/agents.md
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
+  aid: willow:willow-pump-ucp-commerce-mcp
+- name: Willow Storefront GraphQL
+  description: Shopify Storefront GraphQL API served on Willow's own domain at onewillow.com/api/graphql. Anonymous introspection answered on
+    2026-10-20 (QueryRoot with 34 query fields, 41 mutations covering products, collections, cart, customer and checkout). The schema is Shopify's
+    platform Storefront API; the catalog and carts it serves are Willow's.
+  humanURL: https://onewillow.com/
+  baseURL: https://onewillow.com/api/graphql
+  tags:
+  - GraphQL
+  - E-Commerce
+  - Shopify
+  - Storefront
+  properties:
+  - type: GraphQL
+    url: graphql/willow-storefront.graphql
+  x-surface: platform-generated
+  x-platform: shopify
+  aid: willow:willow-storefront-graphql
+  image: https://onewillow.com/cdn/shop/files/OG-Image_db607121-7a26-49c9-b231-3a1e572a0fca_1200x630.jpg?v=1716782735
+- name: Willow Storefront MCP
+  description: Shopify storefront MCP endpoint on Willow's domain at onewillow.com/api/mcp. tools/list answered anonymously on 2026-10-20 with
+    one tool, search_shop_policies_and_faqs, which answers questions about Willow's store policies, products and services. Platform runtime by
+    Shopify, serving Willow's own store content.
+  humanURL: https://onewillow.com/
+  baseURL: https://onewillow.com/api/mcp
+  tags:
+  - MCP
+  - E-Commerce
+  - Shopify
+  - Agentic Commerce
+  properties:
+  - type: MCPServer
+    url: mcp/willow-storefront-mcp-tools-list.json
+  x-surface: platform-generated
+  x-platform: shopify
+  aid: willow:willow-storefront-mcp
+  image: https://onewillow.com/cdn/shop/files/OG-Image_db607121-7a26-49c9-b231-3a1e572a0fca_1200x630.jpg?v=1716782735
 x-enrichment:
-  date: '2026-09-04'
+  date: '2026-10-20'
   status: enriched
-  artifacts_added: 23
-  pass: local-v3
+  artifacts_added: 3
+  pass: local-v5
