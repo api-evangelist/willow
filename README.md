@@ -64,24 +64,119 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Willow Innovations, Inc. is a Mountain View, California consumer health-technology company founded in
-2014 that makes wearable, in-bra breast pumps (Willow 360, Willow Go, Wave) sold direct to consumers
-at onewillow.com.
+Willow Innovations, Inc. is a Mountain View, California consumer health-technology company founded in 2014 that makes wearable, in-bra breast pumps — the Willow 360, Willow Go and the Wave manual pump — sold direct to consumers at onewillow.com and paired with a mobile app that tracks output and controls suction. Willow publishes no developer programme, API keys or OpenAPI, but its storefront is an agent-callable surface: it serves a Universal Commerce Protocol merchant profile at /.well-known/ucp.json and a live, anonymous MCP endpoint at /api/ucp/mcp exposing 13 tools for catalog search, cart, checkout and order retrieval, alongside published agent instructions (agents.md, llms.txt) and OAuth 2.0/OIDC customer-account discovery documents.
 
-Willow runs no developer programme and publishes no OpenAPI, API keys or developer portal — no
-`api.`, `developer.` or `docs.` host exists for either of its domains. What it does publish is an
-**agentic-commerce surface** on its own storefront:
+**Areas:** Company · Consumer Health · Breast Pumps · Maternal Health · Medical Devices · E-Commerce · Agentic Commerce · MCP · Universal Commerce Protocol · Agent-Native · Shopify
 
-- `https://onewillow.com/.well-known/ucp.json` — a Universal Commerce Protocol 2026-08-25 merchant
-  profile (merchant "Willow Pump", origin onewillow.com)
-- `https://onewillow.com/api/ucp/mcp` — a live MCP endpoint whose `tools/list` answers
-  unauthenticated with 13 tools (catalog, cart, checkout, order) and full JSON Schema input schemas
-- `https://onewillow.com/agents.md` and `/llms.txt` — the store's own published agent instructions
-- OAuth 2.0 / OIDC / RFC 9728 discovery documents for Willow customer accounts on
-  `account.onewillow.com`
+## Willow on APIs.io
 
-The MCP runtime is Shopify's `universal-commerce` server; the endpoint, catalog and orders it serves
-are Willow's. Artifacts in this repo were probed and derived from those documents on 2026-09-04.
+Everything profiled for Willow is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/willow/](https://apis.io/providers/willow/)** — or go straight to one of the APIs or properties below.
 
-- https://onewillow.com/
-- https://forgeglobal.com/willow_stock/ (secondary-market listing this profile was harvested from)
+### APIs (3)
+
+- [Willow Pump UCP Commerce MCP](https://apis.io/apis/willow/willow-pump-ucp-commerce-mcp/) — Willow's storefront agent surface — a JSON-RPC 2.0 Model Context Protocol endpoint implementing the Universal Commerce Protocol 2026-08-25 shopping service.…
+- [Willow Storefront GraphQL](https://apis.io/apis/willow/willow-storefront-graphql/) — Shopify Storefront GraphQL API served on Willow's own domain at onewillow.com/api/graphql. Anonymous introspection answered on 2026-10-20 (QueryRoot with 34…
+- [Willow Storefront MCP](https://apis.io/apis/willow/willow-storefront-mcp/) — Shopify storefront MCP endpoint on Willow's domain at onewillow.com/api/mcp. tools/list answered anonymously on 2026-10-20 with one tool,…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [Willow Pump UCP Commerce MCP Server](https://apis.io/servers/willow/willow-pump-ucp-commerce-mcp-server/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Willow Authentication](https://apis.io/security/willow/willow-authentication/)
+- [Willow Domain Security](https://apis.io/security/willow/willow-domain-security/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Willow Scopes](https://apis.io/scopes/willow/willow-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Willow Plans Pricing](https://apis.io/plans/willow/willow-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Willow Rate Limits](https://apis.io/rate-limits/willow/willow-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://onewillow.com/)
+- [Documentation](https://onewillow.com/agents.md)
+- [Getting started](https://shopify.dev/docs/agents/get-started/quickstart)
+- [Sign up](https://onewillow.com/account)
+- [Support](https://help.onewillow.com/s)
+- [Blog](https://onewillow.com/blogs/all)
+- [Terms of service](https://onewillow.com/policies/terms-of-service)
+- [Privacy policy](https://onewillow.com/policies/privacy-policy)
+
+## API Evangelist rating
+
+**Kin Score 34.9** — thin · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 80.0 |
+| Contract quality | 10.4 |
+| Contract governance | 18.2 |
+| Operational transparency | 28.9 |
+| Developer ergonomics | 42.3 |
+| Access clarity | 34.2 |
+
+**Agent readiness 39.9** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | platform (partial credit) |
+| Auth Clarity | served (partial credit) |
+| Idempotency | documented (partial credit) |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | — |
+| Agentic Commerce | platform (partial credit) |
+| Pagination Ratio | na |
+| Operation Distinctiveness | na |
+
+**Regulatory alignment 32.8** — Health
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/willow/](https://apis.io/providers/willow/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Willow: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/willow/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
